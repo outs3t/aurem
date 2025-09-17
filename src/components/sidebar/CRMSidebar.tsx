@@ -56,10 +56,10 @@ export function CRMSidebar() {
   const isCollapsed = state === "collapsed";
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    `transition-smooth ${
+    `transition-smooth text-sidebar-foreground ${
       isActive
-        ? "bg-primary text-primary-foreground shadow-glow"
-        : "hover:bg-accent hover:text-accent-foreground"
+        ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-glow"
+        : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
     }`;
 
   return (
@@ -95,7 +95,7 @@ export function CRMSidebar() {
         <Collapsible open={clientsOpen} onOpenChange={setClientsOpen}>
           <SidebarGroup>
             <CollapsibleTrigger asChild>
-              <SidebarGroupLabel className="hover:bg-accent hover:text-accent-foreground rounded-md p-2 cursor-pointer flex items-center justify-between">
+              <SidebarGroupLabel className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md p-2 cursor-pointer flex items-center justify-between">
                 <div className="flex items-center">
                   <Users className="h-4 w-4 mr-2" />
                   {!isCollapsed && "Anagrafica Clienti"}
