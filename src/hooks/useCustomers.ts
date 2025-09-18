@@ -1,0 +1,158 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+export type CustomerType = 'persona_fisica' | 'azienda';
+
+export interface Customer {
+  id: string;
+  customer_type: CustomerType;
+  first_name?: string;
+  last_name?: string;
+  codice_fiscale?: string;
+  date_of_birth?: string;
+  company_name?: string;
+  partita_iva?: string;
+  codice_sdi?: string;
+  legal_form?: string;
+  email?: string;
+  phone?: string;
+  mobile?: string;
+  fax?: string;
+  website?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postal_code?: string;
+  country?: string;
+  credit_limit?: number;
+  payment_terms?: number;
+  discount_rate?: number;
+  notes?: string;
+  tags?: string[];
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export function useCustomers() {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  const fetchCustomers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('customers')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCustomers(data || []);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      toast({
+        title: 'Errore',
+        description: 'Impossibile caricare i clienti',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createCustomer = async (customerData: Omit<Customer, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('customers')
+        .insert([customerData])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setCustomers(prev => [data, ...prev]);
+      toast({
+        title: 'Successo',
+        description: 'Cliente creato con successo',
+      });
+      return data;
+    } catch (error) {
+      console.error('Error creating customer:', error);
+      toast({
+        title: 'Errore',
+        description: 'Impossibile creare il cliente',
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+
+  const updateCustomer = async (id: string, customerData: Partial<Customer>) => {
+    try {
+      const { data, error } = await supabase
+        .from('customers')
+        .update(customerData)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setCustomers(prev => 
+        prev.map(customer => customer.id === id ? { ...customer, ...data } : customer)
+      );
+      toast({
+        title: 'Successo',
+        description: 'Cliente aggiornato con successo',
+      });
+      return data;
+    } catch (error) {
+      console.error('Error updating customer:', error);
+      toast({
+        title: 'Errore',
+        description: 'Impossibile aggiornare il cliente',
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+
+  const deleteCustomer = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('customers')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      setCustomers(prev => prev.filter(customer => customer.id !== id));
+      toast({
+        title: 'Successo',
+        description: 'Cliente eliminato con successo',
+      });
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      toast({
+        title: 'Errore',
+        description: 'Impossibile eliminare il cliente',
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+
+  return {
+    customers,
+    loading,
+    createCustomer,
+    updateCustomer,
+    deleteCustomer,
+    refetch: fetchCustomers,
+  };
+}

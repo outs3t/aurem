@@ -9,6 +9,9 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import Customers from "./pages/Customers";
+import Warehouse from "./pages/Warehouse";
+import Chat from "./pages/Chat";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,12 +65,12 @@ const App = () => (
             <Route element={<ProtectedLayout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/analytics" element={<div className="p-6"><h1>Analytics - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
-              <Route path="/clienti/persone-fisiche" element={<div className="p-6"><h1>Persone Fisiche - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
-              <Route path="/clienti/aziende" element={<div className="p-6"><h1>Aziende - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
-              <Route path="/magazzino" element={<div className="p-6"><h1>Magazzino - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
+              <Route path="/clienti/persone-fisiche" element={<Customers />} />
+              <Route path="/clienti/aziende" element={<Customers />} />
+              <Route path="/magazzino" element={<Warehouse />} />
               <Route path="/contratti" element={<div className="p-6"><h1>Contratti - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
               <Route path="/preventivi" element={<div className="p-6"><h1>Preventivi - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
-              <Route path="/chat" element={<div className="p-6"><h1>Chat Interna - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
+              <Route path="/chat" element={<Chat />} />
               <Route path="/impostazioni" element={<div className="p-6"><h1>Impostazioni - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
             </Route>
             {/* Catch-all */}
