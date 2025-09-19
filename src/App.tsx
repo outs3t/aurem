@@ -12,6 +12,10 @@ import Auth from "./pages/Auth";
 import Customers from "./pages/Customers";
 import Warehouse from "./pages/Warehouse";
 import Chat from "./pages/Chat";
+import Analytics from "./pages/Analytics";
+import Quotes from "./pages/Quotes";
+import Contracts from "./pages/Contracts";
+import Settings from "./pages/Settings";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,15 +67,14 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route element={<ProtectedLayout />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/analytics" element={<div className="p-6"><h1>Analytics - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
-              <Route path="/clienti/persone-fisiche" element={<Customers />} />
-              <Route path="/clienti/aziende" element={<Customers />} />
-              <Route path="/magazzino" element={<Warehouse />} />
-              <Route path="/contratti" element={<div className="p-6"><h1>Contratti - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
-              <Route path="/preventivi" element={<div className="p-6"><h1>Preventivi - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/impostazioni" element={<div className="p-6"><h1>Impostazioni - In Sviluppo</h1><p className="text-muted-foreground">Collegare Supabase per funzionalità complete.</p></div>} />
+            <Route index element={<Dashboard />} />
+            <Route path="clienti" element={<Customers />} />
+            <Route path="magazzino" element={<Warehouse />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="preventivi" element={<Quotes />} />
+            <Route path="contratti" element={<Contracts />} />
+            <Route path="impostazioni" element={<Settings />} />
             </Route>
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
