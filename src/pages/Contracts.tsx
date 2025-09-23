@@ -348,7 +348,7 @@ const Contracts = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="contract_type">Tipo Contratto</Label>
-                  <Select value={newContract.contract_type} onValueChange={(value) => setNewContract({ ...newContract, contract_type: value })}>
+                  <Select value={newContract.contract_type} onValueChange={(value) => setNewContract({ ...newContract, contract_type: value as 'esterno' | 'interno' })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
