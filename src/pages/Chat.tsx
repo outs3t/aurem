@@ -172,7 +172,15 @@ export default function Chat() {
           ) : rooms.length === 0 ? (
             <div className="p-4 text-center text-muted-foreground">
               <MessageCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>Nessuna chat disponibile</p>
+              <p className="mb-3">Nessuna chat disponibile</p>
+              <Button 
+                size="sm" 
+                onClick={setupUserInRooms}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Crea Chat di Default
+              </Button>
             </div>
           ) : (
             <div className="space-y-1 p-2">

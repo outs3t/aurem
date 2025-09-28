@@ -132,7 +132,8 @@ const Contracts = () => {
       const contractData = {
         ...newContract,
         contract_number: newContract.contract_number || generateContractNumber(),
-        status: 'bozza'
+        status: 'bozza',
+        customer_id: newContract.customer_id || null // Fix: Convert empty string to null
       };
 
       const { error } = await supabase

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Plus, Search, Edit, Trash2, User, Building2, Eye, Filter, Tag, Download } from "lucide-react";
+import { Plus, Search, Edit, Trash2, User, Building2, Eye, Filter, Tag, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { CustomerDetailDialog } from "@/components/customers/CustomerDetailDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,10 @@ export default function Customers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<CustomerType | "all">("all");
   const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [detailCustomer, setDetailCustomer] = useState<Customer | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [formData, setFormData] = useState<Partial<Customer>>({
@@ -44,12 +49,59 @@ export default function Customers() {
       customer.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      customer.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesType = filterType === "all" || customer.customer_type === filterType;
     
     return matchesSearch && matchesType;
   });
+
+  // Paginazione
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+  const paginatedCustomers = filteredCustomers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleViewDetail = (customer: Customer) => {
+    setDetailCustomer(customer);
+    setIsDetailOpen(true);
+  };
+
+  const exportCustomers = () => {
+    const dataToExport = filteredCustomers.map(customer => ({
+      tipo: customer.customer_type === 'azienda' ? 'Azienda' : 'Persona Fisica',
+      nome: getCustomerName(customer),
+      email: customer.email || '',
+      telefono: customer.phone || customer.mobile || '',
+      citta: customer.city || '',
+      attivo: customer.active ? 'Sì' : 'No',
+      tags: customer.tags?.join(', ') || '',
+      fido: customer.credit_limit || 0,
+      sconto: customer.discount_rate || 0,
+      termini_pagamento: customer.payment_terms || 30
+    }));
+
+    const csv = [
+      Object.keys(dataToExport[0] || {}).join(','),
+      ...dataToExport.map(row => Object.values(row).map(val => `"${val}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `clienti_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const resetForm = () => {
     setFormData({
@@ -473,9 +525,9 @@ export default function Customers() {
                 <SelectItem value="azienda">Aziende</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={exportCustomers}>
               <Download className="h-4 w-4" />
-              Esporta
+              Esporta CSV
             </Button>
           </div>
         </CardContent>
@@ -509,7 +561,7 @@ export default function Customers() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCustomers.map((customer) => (
+                {paginatedCustomers.map((customer) => (
                   <TableRow key={customer.id}>
                     <TableCell>
                       <Badge variant={customer.customer_type === 'azienda' ? 'default' : 'secondary'}>
@@ -547,15 +599,22 @@ export default function Customers() {
                         {customer.active ? 'Attivo' : 'Non Attivo'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(customer)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                     <TableCell className="text-right">
+                       <div className="flex justify-end gap-1">
+                         <Button
+                           variant="ghost"
+                           size="sm"
+                           onClick={() => handleViewDetail(customer)}
+                         >
+                           <Eye className="h-4 w-4" />
+                         </Button>
+                         <Button
+                           variant="ghost"
+                           size="sm"
+                           onClick={() => handleEdit(customer)}
+                         >
+                           <Edit className="h-4 w-4" />
+                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -572,6 +631,59 @@ export default function Customers() {
           )}
         </CardContent>
       </Card>
+
+      {/* Paginazione */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Mostrando {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredCustomers.length)} di {filteredCustomers.length} clienti
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Precedente
+            </Button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handlePageChange(page)}
+                  className="w-8 h-8 p-0"
+                >
+                  {page}
+                </Button>
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Successiva
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Dialog Dettaglio Cliente */}
+      <CustomerDetailDialog
+        customer={detailCustomer}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        onEdit={(customer) => {
+          setIsDetailOpen(false);
+          handleEdit(customer);
+        }}
+      />
     </div>
   );
 }

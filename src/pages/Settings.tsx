@@ -173,12 +173,13 @@ const Settings = () => {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="profile">Profilo</TabsTrigger>
           <TabsTrigger value="company">Azienda</TabsTrigger>
           <TabsTrigger value="notifications">Notifiche</TabsTrigger>
           <TabsTrigger value="appearance">Aspetto</TabsTrigger>
           <TabsTrigger value="security">Sicurezza</TabsTrigger>
+          <TabsTrigger value="integrations">Integrazioni</TabsTrigger>
           <TabsTrigger value="data">Dati</TabsTrigger>
         </TabsList>
 
@@ -543,6 +544,119 @@ const Settings = () => {
                   Disconnetti da Tutti i Dispositivi
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="integrations" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Key className="mr-2 h-5 w-5" />
+                API e Integrazioni
+              </CardTitle>
+              <CardDescription>
+                Gestisci le chiavi API e le integrazioni con servizi esterni
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium">Chiavi API</h4>
+                
+                <div className="space-y-4">
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h5 className="font-medium">API CRM</h5>
+                      <Badge variant="secondary">Attiva</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Chiave per accesso alle API del CRM
+                    </p>
+                    <div className="flex gap-2">
+                      <Input 
+                        value="crm_key_•••••••••••••••••••••••••••••••••••••••••"
+                        disabled
+                        className="font-mono text-xs"
+                      />
+                      <Button variant="outline" size="sm">Rigenera</Button>
+                      <Button variant="outline" size="sm">Copia</Button>
+                    </div>
+                  </div>
+
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h5 className="font-medium">Webhook URL</h5>
+                      <Badge variant="outline">Configurabile</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      URL per ricevere notifiche webhook
+                    </p>
+                    <Input 
+                      placeholder="https://api.example.com/webhooks/crm"
+                      className="mb-2"
+                    />
+                    <Button size="sm">Salva URL</Button>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium">Servizi Esterni</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Email Marketing</h5>
+                        <Switch />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Sincronizza clienti con servizio email
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Sistema Contabilità</h5>
+                        <Switch />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Esporta fatture in sistema contabile
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Magazzino Esterno</h5>
+                        <Switch />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Sincronizza scorte con magazzino
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">Analytics</h5>
+                        <Switch defaultChecked />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Raccolta dati per migliorare il servizio
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              <Button>Salva Configurazione Integrazioni</Button>
             </CardContent>
           </Card>
         </TabsContent>
