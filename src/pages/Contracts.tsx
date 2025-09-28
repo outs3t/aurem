@@ -221,7 +221,7 @@ const Contracts = () => {
       contract_number: '',
       title: '',
       description: '',
-      contract_type: 'esterno',
+      contract_type: 'esterno' as 'esterno' | 'interno',
       contract_value: 0,
       currency: 'EUR',
       start_date: new Date().toISOString().split('T')[0],
