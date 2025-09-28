@@ -69,6 +69,8 @@ const App = () => (
             <Route element={<ProtectedLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="clienti" element={<Customers />} />
+            <Route path="clienti/persone-fisiche" element={<Customers />} />
+            <Route path="clienti/aziende" element={<Customers />} />
             <Route path="magazzino" element={<Warehouse />} />
             <Route path="chat" element={<Chat />} />
             <Route path="analytics" element={<Analytics />} />

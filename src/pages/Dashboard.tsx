@@ -59,6 +59,19 @@ export default function Dashboard() {
     }
   };
 
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return "Alta";
+      case "medium":
+        return "Media";
+      case "low":
+        return "Bassa";
+      default:
+        return "N/D";
+    }
+  };
+
   return (
     <div className="flex-1 space-y-6 p-6">
       <div>
@@ -121,7 +134,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <Badge className={getPriorityColor(activity.priority)}>
-                  {activity.priority}
+                  {getPriorityLabel(activity.priority)}
                 </Badge>
               </div>
             ))}
