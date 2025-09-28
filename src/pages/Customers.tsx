@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Plus, Search, Edit, Trash2, User, Building2, Eye, Filter } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, Edit, Trash2, User, Building2, Eye, Filter, Tag, Download } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,15 +15,29 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 export default function Customers() {
   const { customers, loading, createCustomer, updateCustomer, deleteCustomer } = useCustomers();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<CustomerType | "all">("all");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [formData, setFormData] = useState<Partial<Customer>>({
     customer_type: 'persona_fisica',
     country: 'Italia',
-    active: true
+    active: true,
+    tags: []
   });
+
+  // Filtro automatico basato sull'URL  
+  useEffect(() => {
+    if (location.pathname.includes('/persone-fisiche')) {
+      setFilterType('persona_fisica');
+    } else if (location.pathname.includes('/aziende')) {
+      setFilterType('azienda');
+    } else if (location.pathname === '/clienti') {
+      setFilterType('all');
+    }
+  }, [location.pathname]);
 
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = 
@@ -85,8 +100,16 @@ export default function Customers() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Anagrafica Clienti</h1>
-          <p className="text-muted-foreground">Gestisci persone fisiche e aziende</p>
+          <h1 className="text-3xl font-bold">
+            {location.pathname.includes('/persone-fisiche') ? 'Persone Fisiche' :
+             location.pathname.includes('/aziende') ? 'Aziende' :
+             'Anagrafica Clienti'}
+          </h1>
+          <p className="text-muted-foreground">
+            {location.pathname.includes('/persone-fisiche') ? 'Gestisci clienti privati' :
+             location.pathname.includes('/aziende') ? 'Gestisci clienti aziendali' :
+             'Gestisci persone fisiche e aziende'}
+          </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -332,14 +355,28 @@ export default function Customers() {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="notes">Note</Label>
-                  <Textarea
-                    id="notes"
-                    value={formData.notes || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                    rows={3}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="tags">Tags</Label>
+                    <Input
+                      id="tags"
+                      placeholder="Separati da virgola (es: VIP, Fornitore)"
+                      value={formData.tags?.join(', ') || ''}
+                      onChange={(e) => setFormData(prev => ({ 
+                        ...prev, 
+                        tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean)
+                      }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="notes">Note</Label>
+                    <Textarea
+                      id="notes"
+                      value={formData.notes || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                      rows={3}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -354,6 +391,62 @@ export default function Customers() {
             </form>
           </DialogContent>
         </Dialog>
+      </div>
+
+      {/* Statistiche */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <User className="h-5 w-5 text-blue-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Persone Fisiche</p>
+                <p className="text-2xl font-bold">
+                  {customers.filter(c => c.customer_type === 'persona_fisica').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-green-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Aziende</p>
+                <p className="text-2xl font-bold">
+                  {customers.filter(c => c.customer_type === 'azienda').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-purple-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Attivi</p>
+                <p className="text-2xl font-bold">
+                  {customers.filter(c => c.active).length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <Tag className="h-5 w-5 text-orange-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Con Tags</p>
+                <p className="text-2xl font-bold">
+                  {customers.filter(c => c.tags && c.tags.length > 0).length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filtri e Ricerca */}
@@ -380,6 +473,10 @@ export default function Customers() {
                 <SelectItem value="azienda">Aziende</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" className="gap-2">
+              <Download className="h-4 w-4" />
+              Esporta
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -406,6 +503,7 @@ export default function Customers() {
                   <TableHead>Email</TableHead>
                   <TableHead>Telefono</TableHead>
                   <TableHead>Città</TableHead>
+                  <TableHead>Tags</TableHead>
                   <TableHead>Stato</TableHead>
                   <TableHead className="text-right">Azioni</TableHead>
                 </TableRow>
@@ -426,6 +524,24 @@ export default function Customers() {
                     <TableCell>{customer.email || '-'}</TableCell>
                     <TableCell>{customer.phone || customer.mobile || '-'}</TableCell>
                     <TableCell>{customer.city || '-'}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-1 flex-wrap">
+                        {customer.tags && customer.tags.length > 0 ? (
+                          customer.tags.slice(0, 2).map((tag, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground text-sm">-</span>
+                        )}
+                        {customer.tags && customer.tags.length > 2 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{customer.tags.length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Badge variant={customer.active ? 'default' : 'secondary'}>
                         {customer.active ? 'Attivo' : 'Non Attivo'}
