@@ -863,6 +863,18 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      is_member: {
+        Args: { _room_id: string; _user_id: string }
+        Returns: boolean
+      }
+      room_is_accessible: {
+        Args: { _room_id: string; _user_id: string }
+        Returns: boolean
+      }
+      room_is_public: {
+        Args: { _room_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       contract_status:
