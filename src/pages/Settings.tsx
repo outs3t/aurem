@@ -58,21 +58,40 @@ const Settings = () => {
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading profile:', error);
+        toast({
+          title: "Errore",
+          description: "Impossibile caricare il profilo",
+          variant: "destructive",
+        });
+        return;
+      }
 
       if (data) {
         setProfile({
           first_name: data.first_name || '',
           last_name: data.last_name || '',
-          email: data.email || '',
+          email: data.email || user.email || '',
           phone: data.phone || '',
           department: data.department || ''
         });
+      } else {
+        // No profile found, use user email
+        setProfile(prev => ({
+          ...prev,
+          email: user.email || ''
+        }));
       }
     } catch (error) {
       console.error('Error loading profile:', error);
+      toast({
+        title: "Errore",
+        description: "Errore imprevisto durante il caricamento",
+        variant: "destructive",
+      });
     }
   };
 
