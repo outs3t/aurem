@@ -22,8 +22,7 @@ const Settings = () => {
     last_name: '',
     email: '',
     phone: '',
-    department: '',
-    role: 'dipendente' as 'admin' | 'manager' | 'dipendente' | 'viewer'
+    department: ''
   });
   const [companySettings, setCompanySettings] = useState({
     company_name: 'La Mia Azienda',
@@ -69,8 +68,7 @@ const Settings = () => {
           last_name: data.last_name || '',
           email: data.email || '',
           phone: data.phone || '',
-          department: data.department || '',
-          role: data.role || 'dipendente'
+          department: data.department || ''
         });
       }
     } catch (error) {
@@ -84,9 +82,15 @@ const Settings = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
+      // Security: Only update editable fields, not role
       const { error } = await supabase
         .from('profiles')
-        .update(profile)
+        .update({
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          phone: profile.phone,
+          department: profile.department
+        })
         .eq('user_id', user.id);
 
       if (error) throw error;
@@ -205,7 +209,6 @@ const Settings = () => {
                 <div>
                   <h3 className="text-lg font-medium">{profile.first_name} {profile.last_name}</h3>
                   <p className="text-muted-foreground">{profile.email}</p>
-                  <Badge variant="secondary" className="mt-2 capitalize">{profile.role}</Badge>
                 </div>
               </div>
 
