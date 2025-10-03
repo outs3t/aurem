@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Users,
   Package,
@@ -53,9 +54,17 @@ const mainSections = [
 ];
 
 export function CRMSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
   const [clientsOpen, setClientsOpen] = useState(true);
   const isCollapsed = state === "collapsed";
+  const isMobile = useIsMobile();
+  const location = useLocation();
+
+  const handleNavClick = () => {
+    if (isMobile) {
+      setOpen(false);
+    }
+  };
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     `transition-smooth text-sidebar-foreground ${
@@ -83,7 +92,7 @@ export function CRMSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                  <NavLink to={item.url} end className={getNavCls}>
+                  <NavLink to={item.url} end className={getNavCls} onClick={handleNavClick}>
                     <item.icon className={`h-5 w-5 ${isCollapsed ? "mx-auto" : "mr-3"}`} />
                     {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -113,7 +122,7 @@ export function CRMSidebar() {
                   {clientItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
-                        <NavLink to={item.url} className={getNavCls}>
+                        <NavLink to={item.url} className={getNavCls} onClick={handleNavClick}>
                           <item.icon className={`h-4 w-4 ${isCollapsed ? "mx-auto" : "mr-3"}`} />
                           {!isCollapsed && <span>{item.title}</span>}
                         </NavLink>
@@ -133,7 +142,7 @@ export function CRMSidebar() {
               {mainSections.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                  <NavLink to={item.url} className={getNavCls}>
+                  <NavLink to={item.url} className={getNavCls} onClick={handleNavClick}>
                     <item.icon className={`h-5 w-5 ${isCollapsed ? "mx-auto" : "mr-3"}`} />
                     {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>

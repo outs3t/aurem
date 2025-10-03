@@ -247,12 +247,12 @@ export default function Tasks() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="assigned_to">Assegnata a</Label>
-                  <Select value={formData.assigned_to} onValueChange={(value) => setFormData({ ...formData, assigned_to: value })}>
+                  <Select value={formData.assigned_to || "unassigned"} onValueChange={(value) => setFormData({ ...formData, assigned_to: value === "unassigned" ? "" : value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Seleziona utente" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Non assegnata</SelectItem>
+                      <SelectItem value="unassigned">Non assegnata</SelectItem>
                       {users.map(user => (
                         <SelectItem key={user.user_id} value={user.user_id}>
                           {user.first_name} {user.last_name}
