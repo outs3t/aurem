@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,10 +38,15 @@ export function CustomerDetailDialog({ customer, open, onOpenChange, onEdit }: C
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-2">
-              {isCompany ? <Building2 className="h-5 w-5" /> : <User className="h-5 w-5" />}
-              Dettagli Cliente
-            </DialogTitle>
+            <div>
+              <DialogTitle className="flex items-center gap-2">
+                {isCompany ? <Building2 className="h-5 w-5" /> : <User className="h-5 w-5" />}
+                Dettagli Cliente
+              </DialogTitle>
+              <DialogDescription>
+                Visualizza tutti i dettagli del cliente {customerName}
+              </DialogDescription>
+            </div>
             <Button onClick={() => onEdit(customer)} className="gap-2">
               <Edit className="h-4 w-4" />
               Modifica

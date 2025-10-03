@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
@@ -174,15 +174,15 @@ export default function Tasks() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Task</h1>
-          <p className="text-muted-foreground">Gestisci le attività del team</p>
+          <h1 className="text-2xl md:text-3xl font-bold">Task</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Gestisci le attività del team</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()}>
+            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               Nuova Task
             </Button>
@@ -190,6 +190,9 @@ export default function Tasks() {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingTask ? 'Modifica Task' : 'Nuova Task'}</DialogTitle>
+              <DialogDescription>
+                {editingTask ? 'Modifica i dettagli della task esistente' : 'Compila i campi per creare una nuova task'}
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -303,9 +306,9 @@ export default function Tasks() {
         </Dialog>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="Filtra per stato" />
           </SelectTrigger>
           <SelectContent>
@@ -318,7 +321,7 @@ export default function Tasks() {
         </Select>
 
         <Select value={filterPriority} onValueChange={setFilterPriority}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="Filtra per priorità" />
           </SelectTrigger>
           <SelectContent>
@@ -342,9 +345,9 @@ export default function Tasks() {
           filteredTasks.map(task => (
             <Card key={task.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-xl mb-2">{task.title}</CardTitle>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div className="flex-1 space-y-2">
+                    <CardTitle className="text-lg md:text-xl">{task.title}</CardTitle>
                     <div className="flex flex-wrap gap-2">
                       <Badge className={cn("flex items-center gap-1", getPriorityColor(task.priority))}>
                         {getPriorityIcon(task.priority)}
@@ -356,11 +359,12 @@ export default function Tasks() {
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 sm:gap-2 shrink-0">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleOpenDialog(task)}
+                      className="h-8 w-8"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -368,6 +372,7 @@ export default function Tasks() {
                       variant="ghost"
                       size="icon"
                       onClick={() => setDeleteTaskId(task.id)}
+                      className="h-8 w-8"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
@@ -376,9 +381,9 @@ export default function Tasks() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {task.description && (
-                  <p className="text-muted-foreground">{task.description}</p>
+                  <p className="text-sm text-muted-foreground">{task.description}</p>
                 )}
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <User className="h-4 w-4" />
                     <span>{getUserName(task.assigned_to)}</span>
