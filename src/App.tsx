@@ -16,6 +16,7 @@ import Analytics from "./pages/Analytics";
 import Quotes from "./pages/Quotes";
 import Contracts from "./pages/Contracts";
 import Settings from "./pages/Settings";
+import Tasks from "./pages/Tasks";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,6 +72,7 @@ const App = () => (
             <Route path="clienti" element={<Customers />} />
             <Route path="clienti/persone-fisiche" element={<Customers />} />
             <Route path="clienti/aziende" element={<Customers />} />
+            <Route path="task" element={<Tasks />} />
             <Route path="magazzino" element={<Warehouse />} />
             <Route path="chat" element={<Chat />} />
             <Route path="analytics" element={<Analytics />} />

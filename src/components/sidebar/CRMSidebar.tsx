@@ -12,6 +12,7 @@ import {
   Building2,
   User,
   ChevronDown,
+  CheckSquare,
 } from "lucide-react";
 
 import {
@@ -43,6 +44,7 @@ const clientItems = [
 ];
 
 const mainSections = [
+  { title: "Task", url: "/task", icon: CheckSquare },
   { title: "Magazzino", url: "/magazzino", icon: Package },
   { title: "Contratti", url: "/contratti", icon: FileText },
   { title: "Preventivi", url: "/preventivi", icon: Calculator },

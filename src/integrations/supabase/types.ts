@@ -847,6 +847,48 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           assigned_at: string | null
@@ -915,6 +957,8 @@ export type Database = {
       contract_type: "esterno" | "interno"
       customer_type: "persona_fisica" | "azienda"
       notification_status: "non_letta" | "letta" | "archiviata"
+      task_priority: "bassa" | "media" | "alta" | "urgente"
+      task_status: "da_fare" | "in_corso" | "completata" | "annullata"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1047,6 +1091,8 @@ export const Constants = {
       contract_type: ["esterno", "interno"],
       customer_type: ["persona_fisica", "azienda"],
       notification_status: ["non_letta", "letta", "archiviata"],
+      task_priority: ["bassa", "media", "alta", "urgente"],
+      task_status: ["da_fare", "in_corso", "completata", "annullata"],
     },
   },
 } as const
