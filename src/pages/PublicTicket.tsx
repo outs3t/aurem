@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Building2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import auremLogo from '@/assets/aurem-logo.png';
 
 export default function PublicTicket() {
   const [loading, setLoading] = useState(false);
@@ -133,12 +132,6 @@ export default function PublicTicket() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-primary/5 p-4">
         <Card className="w-full max-w-2xl shadow-2xl">
           <CardHeader className="text-center space-y-4">
-            <div className="flex justify-center items-center gap-3">
-              <img src={auremLogo} alt="Aurem Logo" className="h-16 w-16" />
-              <h1 className="font-playfair text-4xl font-bold bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 bg-clip-text text-transparent">
-                Aurem
-              </h1>
-            </div>
             <div className="flex justify-center">
               <CheckCircle2 className="h-20 w-20 text-green-500" />
             </div>
@@ -184,12 +177,6 @@ export default function PublicTicket() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-primary/5 p-4">
       <Card className="w-full max-w-3xl shadow-2xl">
         <CardHeader className="text-center space-y-2">
-          <div className="flex justify-center items-center gap-3 mb-4">
-            <img src={auremLogo} alt="Aurem Logo" className="h-16 w-16" />
-            <h1 className="font-playfair text-4xl font-bold bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 bg-clip-text text-transparent">
-              Aurem
-            </h1>
-          </div>
           <CardTitle className="text-3xl">Richiedi Assistenza</CardTitle>
           <CardDescription className="text-base">
             Compila il modulo per aprire un ticket di supporto
