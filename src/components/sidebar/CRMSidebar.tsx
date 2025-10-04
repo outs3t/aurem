@@ -77,7 +77,7 @@ export function CRMSidebar() {
 
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
-      <SidebarContent className="bg-gradient-to-b from-sidebar to-sidebar/95">
+      <SidebarContent className="bg-gradient-to-b from-sidebar-background to-sidebar-background/95">
         {!isCollapsed && (
           <div className="p-6 border-b border-sidebar-border">
             <h2 className="text-xl font-bold gradient-primary bg-clip-text text-transparent">
