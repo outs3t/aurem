@@ -95,8 +95,8 @@ export function CRMSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                   <NavLink to={item.url} end className={getNavCls} onClick={handleNavClick}>
-                    <item.icon className={`h-5 w-5 ${isCollapsed ? "mx-auto" : "mr-3"}`} />
-                    {!isCollapsed && <span>{item.title}</span>}
+                    <item.icon className={`h-5 w-5 text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground ${isCollapsed ? "mx-auto" : "mr-3"}`} />
+                    {!isCollapsed && <span className="text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -125,8 +125,8 @@ export function CRMSidebar() {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
                         <NavLink to={item.url} className={getNavCls} onClick={handleNavClick}>
-                          <item.icon className={`h-4 w-4 ${isCollapsed ? "mx-auto" : "mr-3"}`} />
-                          {!isCollapsed && <span>{item.title}</span>}
+                          <item.icon className={`h-4 w-4 text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground ${isCollapsed ? "mx-auto" : "mr-3"}`} />
+                          {!isCollapsed && <span className="text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground">{item.title}</span>}
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -145,8 +145,8 @@ export function CRMSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                   <NavLink to={item.url} className={getNavCls} onClick={handleNavClick}>
-                    <item.icon className={`h-5 w-5 ${isCollapsed ? "mx-auto" : "mr-3"}`} />
-                    {!isCollapsed && <span>{item.title}</span>}
+                    <item.icon className={`h-5 w-5 text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground ${isCollapsed ? "mx-auto" : "mr-3"}`} />
+                    {!isCollapsed && <span className="text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
