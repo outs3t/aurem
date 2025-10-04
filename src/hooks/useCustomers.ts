@@ -67,11 +67,23 @@ export function useCustomers() {
 
   const createCustomer = async (customerData: Omit<Customer, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const user = authData?.user;
+      if (authError) throw authError;
+      if (!user) {
+        toast({
+          title: 'Accesso richiesto',
+          description: 'Devi essere autenticato per creare un cliente.',
+          variant: 'destructive',
+        });
+        throw new Error('Not authenticated');
+      }
+
       const { data, error } = await supabase
         .from('customers')
-        .insert([customerData])
+        .insert([{ ...customerData, created_by: user.id }])
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       

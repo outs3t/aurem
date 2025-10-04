@@ -107,9 +107,21 @@ export function useProducts() {
 
   const createProduct = async (productData: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const user = authData?.user;
+      if (authError) throw authError;
+      if (!user) {
+        toast({
+          title: 'Accesso richiesto',
+          description: 'Devi essere autenticato per creare un prodotto.',
+          variant: 'destructive',
+        });
+        throw new Error('Not authenticated');
+      }
+
       const { data, error } = await supabase
         .from('products')
-        .insert([productData])
+        .insert([{ ...productData, created_by: user.id }])
         .select(`
           *,
           product_categories (id, name, description)
