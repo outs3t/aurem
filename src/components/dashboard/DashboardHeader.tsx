@@ -1,7 +1,7 @@
 import { Bell, Search, User, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import crmLogo from '@/assets/crm-logo.png';
+import auremLogo from '@/assets/aurem-logo.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,7 +45,14 @@ export function DashboardHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <SidebarTrigger className="mr-4" />
-        <img src={crmLogo} alt="CRM" className="h-8 w-8 mr-4" />
+        
+        {/* Logo e Nome Aurem */}
+        <div className="flex items-center gap-3 mr-6">
+          <img src={auremLogo} alt="Aurem Logo" className="h-10 w-10" />
+          <h1 className="font-playfair text-2xl font-bold bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 bg-clip-text text-transparent tracking-wide">
+            Aurem
+          </h1>
+        </div>
         
         <div className="flex flex-1 items-center justify-between space-x-4">
           <div className="flex-1 max-w-lg">
