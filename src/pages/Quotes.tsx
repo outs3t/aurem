@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Search, FileText, Edit, Trash2, Eye, Download, Calendar } from 'lucide-react';
+import { Plus, Search, FileText, Edit, Trash2, Eye, Download, Calendar, MoreVertical } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { QuoteDetailsDialog } from '@/components/quotes/QuoteDetailsDialog';
 
 interface Quote {
   id: string;
@@ -54,6 +56,8 @@ const Quotes = () => {
   const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [viewingQuote, setViewingQuote] = useState<Quote | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const [newQuote, setNewQuote] = useState({
@@ -212,6 +216,53 @@ const Quotes = () => {
       toast({
         title: "Errore",
         description: "Impossibile eliminare il preventivo",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleStatusChange = async (quoteId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('quotes')
+        .update({ status: newStatus })
+        .eq('id', quoteId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Successo",
+        description: `Stato aggiornato a: ${newStatus}`,
+      });
+
+      fetchQuotes();
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile aggiornare lo stato",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleViewQuote = (quote: Quote) => {
+    setViewingQuote(quote);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleDownloadPDF = async (quoteId: string) => {
+    try {
+      // TODO: Implementare generazione PDF
+      toast({
+        title: "Informazione",
+        description: "Funzionalità download PDF in fase di implementazione.",
+      });
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile scaricare il PDF",
         variant: "destructive",
       });
     }
@@ -516,18 +567,42 @@ const Quotes = () => {
                   <TableCell>€{quote.total_amount.toLocaleString('it-IT', { minimumFractionDigits: 2 })}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => handleViewQuote(quote)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => openEditDialog(quote)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => handleDownloadPDF(quote.id)}>
                         <Download className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteQuote(quote.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'bozza')}>
+                            Segna come Bozza
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'inviato')}>
+                            Segna come Inviato
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'accettato')}>
+                            Segna come Accettato
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'rifiutato')}>
+                            Segna come Rifiutato
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'scaduto')}>
+                            Segna come Scaduto
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteQuote(quote.id)} className="text-destructive">
+                            Elimina
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -555,6 +630,13 @@ const Quotes = () => {
           )}
         </CardContent>
       </Card>
+
+      <QuoteDetailsDialog 
+        quote={viewingQuote}
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        onDownloadPDF={handleDownloadPDF}
+      />
     </div>
   );
 };

@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Search, FileText, Edit, Trash2, Eye, Download, Calendar, AlertTriangle } from 'lucide-react';
+import { Plus, Search, FileText, Edit, Trash2, Eye, Download, Calendar, AlertTriangle, Upload, MoreVertical } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ContractDetailsDialog } from '@/components/contracts/ContractDetailsDialog';
 
 interface Contract {
   id: string;
@@ -55,6 +57,8 @@ const Contracts = () => {
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [viewingContract, setViewingContract] = useState<Contract | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const [newContract, setNewContract] = useState({
@@ -213,6 +217,75 @@ const Contracts = () => {
         title: "Errore",
         description: "Impossibile eliminare il contratto",
         variant: "destructive",
+      });
+    }
+  };
+
+  const handleStatusChange = async (contractId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('contracts')
+        .update({ status: newStatus as any })
+        .eq('id', contractId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Successo",
+        description: `Stato aggiornato a: ${newStatus}`,
+      });
+
+      fetchContracts();
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile aggiornare lo stato",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleViewContract = (contract: Contract) => {
+    setViewingContract(contract);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleUploadContract = async (contractId: string) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.doc,.docx';
+    
+    input.onchange = async (e: any) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        // TODO: Implementare upload su Supabase Storage
+        toast({
+          title: "Informazione",
+          description: "Funzionalità upload file in fase di implementazione. Sarà necessario configurare Supabase Storage.",
+        });
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        toast({
+          title: "Errore",
+          description: "Impossibile caricare il file",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    input.click();
+  };
+
+  const handleDownloadContract = (contract: Contract) => {
+    if (contract.contract_file_url) {
+      window.open(contract.contract_file_url, '_blank');
+    } else {
+      toast({
+        title: "Avviso",
+        description: "Nessun file contratto disponibile",
       });
     }
   };
@@ -567,18 +640,47 @@ const Contracts = () => {
                   <TableCell>{getStatusBadge(contract)}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => handleViewContract(contract)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => openEditDialog(contract)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleDownloadContract(contract)}
+                        disabled={!contract.contract_file_url}
+                      >
                         <Download className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteContract(contract.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'bozza')}>
+                            Segna come Bozza
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'attivo')}>
+                            Segna come Attivo
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'sospeso')}>
+                            Segna come Sospeso
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'terminato')}>
+                            Segna come Terminato
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'scaduto')}>
+                            Segna come Scaduto
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteContract(contract.id)} className="text-destructive">
+                            Elimina
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -606,6 +708,13 @@ const Contracts = () => {
           )}
         </CardContent>
       </Card>
+
+      <ContractDetailsDialog 
+        contract={viewingContract}
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        onUploadContract={handleUploadContract}
+      />
     </div>
   );
 };
