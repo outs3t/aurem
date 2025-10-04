@@ -93,20 +93,58 @@ export default function PublicTicket() {
 
       if (insertError) throw insertError;
 
-      // Send confirmation email
+      // Invia notifica nella chat di supporto
       const customerName = formData.customer_type === 'persona_fisica' 
         ? `${formData.first_name} ${formData.last_name}`
         : formData.company_name;
 
-      await supabase.functions.invoke('send-ticket-email', {
-        body: {
-          ticketNumber: newTicketNumber,
-          customerName,
-          email: formData.email,
-          subject: formData.subject,
-          description: formData.description,
-        },
-      });
+      // Trova o crea la chat di supporto
+      let supportRoomId: string;
+      const { data: existingRoom } = await supabase
+        .from('chat_rooms')
+        .select('id')
+        .eq('room_type', 'support')
+        .eq('name', 'Supporto Ticket')
+        .single();
+
+      if (existingRoom) {
+        supportRoomId = existingRoom.id;
+      } else {
+        // Crea la stanza di supporto se non esiste
+        const { data: newRoom, error: roomError } = await supabase
+          .from('chat_rooms')
+          .insert([{
+            name: 'Supporto Ticket',
+            description: 'Notifiche automatiche dei ticket',
+            room_type: 'support',
+            is_private: false
+          }])
+          .select()
+          .single();
+
+        if (roomError) throw roomError;
+        supportRoomId = newRoom.id;
+      }
+
+      // Invia messaggio nella chat
+      const messageContent = `🎫 **Nuovo Ticket Ricevuto**\n\n` +
+        `📋 **Numero**: ${newTicketNumber}\n` +
+        `👤 **Cliente**: ${customerName}\n` +
+        `📧 **Email**: ${formData.email}\n` +
+        `📱 **Telefono**: ${formData.phone}\n` +
+        `📌 **Oggetto**: ${formData.subject}\n` +
+        `📝 **Descrizione**: ${formData.description}`;
+
+      const { error: messageError } = await supabase
+        .from('chat_messages')
+        .insert([{
+          room_id: supportRoomId,
+          sender_id: '00000000-0000-0000-0000-000000000000', // System user
+          content: messageContent,
+          message_type: 'text'
+        }]);
+
+      if (messageError) console.error('Error sending chat notification:', messageError);
 
       setTicketNumber(newTicketNumber);
       setSubmitted(true);
