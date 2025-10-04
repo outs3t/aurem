@@ -124,11 +124,45 @@ export function useTickets() {
     }
   };
 
+  const createTicket = async (ticketData: Omit<Ticket, 'id' | 'ticket_number' | 'created_at' | 'updated_at'>) => {
+    try {
+      // Generate ticket number
+      const { data: ticketNumberData, error: ticketNumberError } = await supabase
+        .rpc('generate_ticket_number');
+
+      if (ticketNumberError) throw ticketNumberError;
+
+      const { error } = await supabase
+        .from('tickets')
+        .insert([{
+          ...ticketData,
+          ticket_number: ticketNumberData,
+        }]);
+
+      if (error) throw error;
+
+      await fetchTickets();
+      toast({
+        title: 'Successo',
+        description: `Ticket ${ticketNumberData} creato con successo`,
+      });
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+      toast({
+        title: 'Errore',
+        description: 'Impossibile creare il ticket',
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+
   return {
     tickets,
     loading,
     updateTicket,
     deleteTicket,
+    createTicket,
     refetch: fetchTickets,
   };
 }

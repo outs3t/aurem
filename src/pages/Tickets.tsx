@@ -6,17 +6,37 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Search, Eye, Trash2, AlertCircle, Clock, CheckCircle2, User, Building2 } from 'lucide-react';
+import { Search, Eye, Trash2, AlertCircle, Clock, CheckCircle2, User, Building2, Plus, ExternalLink, Copy } from 'lucide-react';
 import { useTickets } from '@/hooks/useTickets';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Tickets() {
-  const { tickets, loading, updateTicket, deleteTicket } = useTickets();
+  const { tickets, loading, updateTicket, deleteTicket, createTicket } = useTickets();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isLinkOpen, setIsLinkOpen] = useState(false);
+  const { toast } = useToast();
+
+  const [newTicket, setNewTicket] = useState({
+    customer_type: 'persona_fisica' as 'persona_fisica' | 'azienda',
+    first_name: '',
+    last_name: '',
+    company_name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    description: '',
+    status: 'aperto' as const,
+    priority: 'normale' as const,
+  });
 
   const filteredTickets = tickets.filter(ticket => {
     const matchesSearch = 
@@ -84,6 +104,36 @@ export default function Tickets() {
     setIsDetailOpen(true);
   };
 
+  const handleCreateTicket = async () => {
+    try {
+      await createTicket(newTicket);
+      setIsCreateOpen(false);
+      setNewTicket({
+        customer_type: 'persona_fisica',
+        first_name: '',
+        last_name: '',
+        company_name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        description: '',
+        status: 'aperto',
+        priority: 'normale',
+      });
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+    }
+  };
+
+  const handleCopyLink = () => {
+    const publicLink = `${window.location.origin}/supporto`;
+    navigator.clipboard.writeText(publicLink);
+    toast({
+      title: 'Link copiato!',
+      description: 'Il link del form è stato copiato negli appunti',
+    });
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-6">
@@ -100,6 +150,16 @@ export default function Tickets() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">Ticket di Supporto</h1>
           <p className="text-muted-foreground">Gestisci le richieste dei clienti</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsLinkOpen(true)}>
+            <ExternalLink className="h-4 w-4 mr-2" />
+            Link Form Pubblico
+          </Button>
+          <Button onClick={() => setIsCreateOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nuovo Ticket
+          </Button>
         </div>
         <Card className="md:w-auto">
           <CardContent className="p-4">
@@ -303,6 +363,185 @@ export default function Tickets() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog per creare nuovo ticket */}
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Crea Nuovo Ticket</DialogTitle>
+            <DialogDescription>
+              Inserisci manualmente un ticket per un cliente
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Tabs 
+              value={newTicket.customer_type} 
+              onValueChange={(value: 'persona_fisica' | 'azienda') => 
+                setNewTicket(prev => ({ ...prev, customer_type: value }))
+              }
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="persona_fisica" className="gap-2">
+                  <User className="h-4 w-4" />
+                  Persona Fisica
+                </TabsTrigger>
+                <TabsTrigger value="azienda" className="gap-2">
+                  <Building2 className="h-4 w-4" />
+                  Azienda
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="persona_fisica" className="space-y-4 mt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new_first_name">Nome *</Label>
+                    <Input
+                      id="new_first_name"
+                      value={newTicket.first_name}
+                      onChange={(e) => setNewTicket(prev => ({ ...prev, first_name: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new_last_name">Cognome *</Label>
+                    <Input
+                      id="new_last_name"
+                      value={newTicket.last_name}
+                      onChange={(e) => setNewTicket(prev => ({ ...prev, last_name: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="azienda" className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new_company_name">Ragione Sociale *</Label>
+                  <Input
+                    id="new_company_name"
+                    value={newTicket.company_name}
+                    onChange={(e) => setNewTicket(prev => ({ ...prev, company_name: e.target.value }))}
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="new_email">Email *</Label>
+                <Input
+                  id="new_email"
+                  type="email"
+                  value={newTicket.email}
+                  onChange={(e) => setNewTicket(prev => ({ ...prev, email: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new_phone">Telefono</Label>
+                <Input
+                  id="new_phone"
+                  value={newTicket.phone}
+                  onChange={(e) => setNewTicket(prev => ({ ...prev, phone: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="new_status">Stato</Label>
+                <Select
+                  value={newTicket.status}
+                  onValueChange={(value: any) => setNewTicket(prev => ({ ...prev, status: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="aperto">Aperto</SelectItem>
+                    <SelectItem value="in_lavorazione">In Lavorazione</SelectItem>
+                    <SelectItem value="chiuso">Chiuso</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new_priority">Priorità</Label>
+                <Select
+                  value={newTicket.priority}
+                  onValueChange={(value: any) => setNewTicket(prev => ({ ...prev, priority: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bassa">Bassa</SelectItem>
+                    <SelectItem value="normale">Normale</SelectItem>
+                    <SelectItem value="alta">Alta</SelectItem>
+                    <SelectItem value="urgente">Urgente</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="new_subject">Oggetto *</Label>
+              <Input
+                id="new_subject"
+                value={newTicket.subject}
+                onChange={(e) => setNewTicket(prev => ({ ...prev, subject: e.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="new_description">Descrizione *</Label>
+              <Textarea
+                id="new_description"
+                value={newTicket.description}
+                onChange={(e) => setNewTicket(prev => ({ ...prev, description: e.target.value }))}
+                rows={4}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
+                Annulla
+              </Button>
+              <Button onClick={handleCreateTicket}>
+                Crea Ticket
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog per mostrare link form pubblico */}
+      <Dialog open={isLinkOpen} onOpenChange={setIsLinkOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Link Form Pubblico</DialogTitle>
+            <DialogDescription>
+              Condividi questo link con i tuoi clienti per permettergli di creare ticket
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="p-4 bg-muted rounded-lg">
+              <code className="text-sm break-all">
+                {window.location.origin}/supporto
+              </code>
+            </div>
+            <div className="flex gap-2">
+              <Button className="flex-1" onClick={handleCopyLink}>
+                <Copy className="h-4 w-4 mr-2" />
+                Copia Link
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => window.open('/supporto', '_blank')}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Apri Form
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
