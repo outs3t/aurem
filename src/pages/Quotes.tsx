@@ -583,22 +583,22 @@ const Quotes = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'bozza')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(quote.id, 'bozza')}>
                             Segna come Bozza
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'inviato')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(quote.id, 'inviato')}>
                             Segna come Inviato
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'accettato')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(quote.id, 'accettato')}>
                             Segna come Accettato
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'rifiutato')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(quote.id, 'rifiutato')}>
                             Segna come Rifiutato
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(quote.id, 'scaduto')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(quote.id, 'scaduto')}>
                             Segna come Scaduto
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDeleteQuote(quote.id)} className="text-destructive">
+                          <DropdownMenuItem onSelect={() => handleDeleteQuote(quote.id)} className="text-destructive">
                             Elimina
                           </DropdownMenuItem>
                         </DropdownMenuContent>

@@ -661,22 +661,22 @@ const Contracts = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'bozza')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(contract.id, 'bozza')}>
                             Segna come Bozza
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'attivo')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(contract.id, 'attivo')}>
                             Segna come Attivo
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'sospeso')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(contract.id, 'sospeso')}>
                             Segna come Sospeso
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'terminato')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(contract.id, 'terminato')}>
                             Segna come Terminato
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(contract.id, 'scaduto')}>
+                          <DropdownMenuItem onSelect={() => handleStatusChange(contract.id, 'scaduto')}>
                             Segna come Scaduto
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDeleteContract(contract.id)} className="text-destructive">
+                          <DropdownMenuItem onSelect={() => handleDeleteContract(contract.id)} className="text-destructive">
                             Elimina
                           </DropdownMenuItem>
                         </DropdownMenuContent>
