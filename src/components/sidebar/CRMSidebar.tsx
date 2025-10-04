@@ -69,10 +69,10 @@ export function CRMSidebar() {
   };
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    `transition-smooth text-sidebar-foreground ${
+    `transition-smooth ${
       isActive
         ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-glow"
-        : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
     }`;
 
   return (
