@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { ChatInterface } from '@/components/chat/ChatInterface';
+import { NewChatDialog } from '@/components/chat/NewChatDialog';
 import { useToast } from '@/hooks/use-toast';
 
 interface ChatRoom {
@@ -152,9 +153,7 @@ export default function Chat() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Chat Interna</h2>
             <div className="flex gap-1">
-              <Button variant="ghost" size="sm">
-                <Plus className="h-4 w-4" />
-              </Button>
+              <NewChatDialog onChatCreated={fetchChatRooms} />
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
               </Button>
