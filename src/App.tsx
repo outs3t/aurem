@@ -17,6 +17,8 @@ import Quotes from "./pages/Quotes";
 import Contracts from "./pages/Contracts";
 import Settings from "./pages/Settings";
 import Tasks from "./pages/Tasks";
+import Tickets from "./pages/Tickets";
+import PublicTicket from "./pages/PublicTicket";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,6 +69,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/supporto" element={<PublicTicket />} />
             <Route element={<ProtectedLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="clienti" element={<Customers />} />
@@ -78,6 +81,7 @@ const App = () => (
             <Route path="analytics" element={<Analytics />} />
             <Route path="preventivi" element={<Quotes />} />
             <Route path="contratti" element={<Contracts />} />
+            <Route path="ticket" element={<Tickets />} />
             <Route path="impostazioni" element={<Settings />} />
             </Route>
             {/* Catch-all */}

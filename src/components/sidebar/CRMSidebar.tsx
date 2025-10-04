@@ -14,6 +14,7 @@ import {
   User,
   ChevronDown,
   CheckSquare,
+  Ticket,
 } from "lucide-react";
 
 import {
@@ -49,6 +50,7 @@ const mainSections = [
   { title: "Magazzino", url: "/magazzino", icon: Package },
   { title: "Contratti", url: "/contratti", icon: FileText },
   { title: "Preventivi", url: "/preventivi", icon: Calculator },
+  { title: "Ticket", url: "/ticket", icon: Ticket },
   { title: "Chat Interna", url: "/chat", icon: MessageSquare },
   { title: "Impostazioni", url: "/impostazioni", icon: Settings },
 ];

@@ -1,6 +1,7 @@
 import { Bell, Search, User, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import crmLogo from '@/assets/crm-logo.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,6 +45,7 @@ export function DashboardHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <SidebarTrigger className="mr-4" />
+        <img src={crmLogo} alt="CRM" className="h-8 w-8 mr-4" />
         
         <div className="flex flex-1 items-center justify-between space-x-4">
           <div className="flex-1 max-w-lg">
@@ -119,11 +121,11 @@ export function DashboardHeader() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => navigate('/impostazioni')}>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profilo</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => navigate('/impostazioni')}>
                   <span>Impostazioni</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
