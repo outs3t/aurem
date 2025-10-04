@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import auremIcon from '@/assets/aurem-icon.png';
 import {
   Users,
   Package,
@@ -78,12 +79,19 @@ export function CRMSidebar() {
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-gradient-to-b from-sidebar to-sidebar/95">
-        {!isCollapsed && (
-          <div className="p-6 border-b border-sidebar-border">
-            <h2 className="text-xl font-bold gradient-primary bg-clip-text text-transparent">
-              CRM Gestionale
-            </h2>
-            <p className="text-sm text-muted-foreground">Sistema di gestione completo</p>
+        {!isCollapsed ? (
+          <div className="p-6 border-b border-sidebar-border flex items-center gap-3">
+            <img src={auremIcon} alt="Aurem" className="h-12 w-12" />
+            <div>
+              <h2 className="font-playfair text-2xl font-bold bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 bg-clip-text text-transparent">
+                Aurem
+              </h2>
+              <p className="text-xs text-muted-foreground">Sistema di gestione</p>
+            </div>
+          </div>
+        ) : (
+          <div className="p-3 border-b border-sidebar-border flex justify-center">
+            <img src={auremIcon} alt="Aurem" className="h-10 w-10" />
           </div>
         )}
 
