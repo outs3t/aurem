@@ -44,11 +44,11 @@ export default function Auth() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) navigate("/", { replace: true });
+      if (session) navigate("/dashboard", { replace: true });
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/", { replace: true });
+      if (session) navigate("/dashboard", { replace: true });
       setLoading(false);
     });
 
@@ -75,7 +75,7 @@ export default function Auth() {
       toast({ title: "Accesso fallito", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Benvenuto", description: "Login effettuato con successo" });
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   };
 
@@ -90,7 +90,7 @@ export default function Auth() {
       return;
     }
     
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}/dashboard`;
     const { error } = await supabase.auth.signUp({
       email: validation.data.email,
       password: validation.data.password,

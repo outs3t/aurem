@@ -19,6 +19,7 @@ import Settings from "./pages/Settings";
 import Tasks from "./pages/Tasks";
 import Tickets from "./pages/Tickets";
 import PublicTicket from "./pages/PublicTicket";
+import LandingPage from "./pages/LandingPage";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -68,10 +69,11 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/supporto" element={<PublicTicket />} />
             <Route element={<ProtectedLayout />}>
-            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="clienti" element={<Customers />} />
             <Route path="clienti/persone-fisiche" element={<Customers />} />
             <Route path="clienti/aziende" element={<Customers />} />
