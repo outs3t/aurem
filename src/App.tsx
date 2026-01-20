@@ -20,6 +20,7 @@ import Tasks from "./pages/Tasks";
 import Tickets from "./pages/Tickets";
 import PublicTicket from "./pages/PublicTicket";
 import LandingPage from "./pages/LandingPage";
+import GuidePage from "./pages/GuidePage";
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,6 +72,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/guida" element={<GuidePage />} />
             <Route path="/supporto" element={<PublicTicket />} />
             <Route element={<ProtectedLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
