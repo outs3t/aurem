@@ -1010,18 +1010,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_contract_expiries: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      check_low_stock: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      generate_ticket_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      check_contract_expiries: { Args: never; Returns: undefined }
+      check_low_stock: { Args: never; Returns: undefined }
+      generate_ticket_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1037,10 +1028,7 @@ export type Database = {
         Args: { _room_id: string; _user_id: string }
         Returns: boolean
       }
-      room_is_public: {
-        Args: { _room_id: string }
-        Returns: boolean
-      }
+      room_is_public: { Args: { _room_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "manager" | "dipendente" | "viewer"
