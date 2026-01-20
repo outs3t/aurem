@@ -107,10 +107,17 @@ export default function Auth() {
   if (loading) return <div className="flex h-screen items-center justify-center text-muted-foreground">Caricamento…</div>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
+      <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-center">Accedi al Gestionale</CardTitle>
+          <CardTitle className="text-center text-white">Accedi al Gestionale</CardTitle>
+          <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+            <p className="text-amber-300 text-sm text-center">
+              <strong>🔐 Credenziali Demo:</strong><br />
+              Email: <code className="bg-black/30 px-1 rounded">demo@aurem.it</code><br />
+              Password: <code className="bg-black/30 px-1 rounded">Demo1234!@#$</code>
+            </p>
+          </div>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">
