@@ -136,26 +136,32 @@ export function useCustomers() {
 
   const deleteCustomer = async (id: string) => {
     try {
-      const { error } = await supabase
+      console.log('Attempting to delete customer with id:', id);
+      
+      const { error, count } = await supabase
         .from('customers')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase delete error:', error);
+        throw error;
+      }
       
+      console.log('Delete successful, updating local state');
       setCustomers(prev => prev.filter(customer => customer.id !== id));
       toast({
         title: 'Successo',
         description: 'Cliente eliminato con successo',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting customer:', error);
       toast({
         title: 'Errore',
-        description: 'Impossibile eliminare il cliente',
+        description: error?.message || 'Impossibile eliminare il cliente',
         variant: 'destructive',
       });
-      throw error;
     }
   };
 

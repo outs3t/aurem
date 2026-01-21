@@ -26,7 +26,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -36,7 +35,7 @@ import {
 } from "@/components/ui/collapsible";
 
 const menuItems = [
-  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ];
 
@@ -56,7 +55,7 @@ const mainSections = [
 ];
 
 export function CRMSidebar() {
-  const { state, setOpen } = useSidebar();
+  const { state, setOpen, setOpenMobile, openMobile } = useSidebar();
   const [clientsOpen, setClientsOpen] = useState(true);
   const isCollapsed = state === "collapsed";
   const isMobile = useIsMobile();
@@ -64,39 +63,41 @@ export function CRMSidebar() {
 
   const handleNavClick = () => {
     if (isMobile) {
-      setOpen(false);
+      setOpenMobile(false);
     }
   };
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    `transition-smooth ${
+    `flex items-center w-full px-3 py-2 rounded-md transition-colors ${
       isActive
-        ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-glow"
+        ? "bg-primary text-primary-foreground"
         : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
     }`;
 
   return (
-    <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
-      <SidebarContent className="bg-gradient-to-b from-sidebar-background to-sidebar-background/95">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
+      <SidebarContent className="bg-sidebar">
         {!isCollapsed && (
-          <div className="p-6 border-b border-sidebar-border">
-            <h2 className="text-xl font-bold gradient-primary bg-clip-text text-transparent">
+          <div className="p-4 border-b border-sidebar-border">
+            <h2 className="text-lg font-bold text-sidebar-foreground">
               CRM Gestionale
             </h2>
-            <p className="text-sm text-muted-foreground">Sistema di gestione completo</p>
+            <p className="text-xs text-muted-foreground">Sistema di gestione</p>
           </div>
         )}
 
         <SidebarGroup>
-          <SidebarGroupLabel>Principale</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-3 py-2">
+            Principale
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                  <NavLink to={item.url} end className={getNavCls} onClick={handleNavClick}>
-                    <item.icon className={`h-5 w-5 text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground ${isCollapsed ? "mx-auto" : "mr-3"}`} />
-                    {!isCollapsed && <span className="text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground">{item.title}</span>}
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <NavLink to={item.url} end className={getNavCls} onClick={handleNavClick}>
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {!isCollapsed && <span className="ml-3">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -108,13 +109,13 @@ export function CRMSidebar() {
         <Collapsible open={clientsOpen} onOpenChange={setClientsOpen}>
           <SidebarGroup>
             <CollapsibleTrigger asChild>
-              <SidebarGroupLabel className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md p-2 cursor-pointer flex items-center justify-between">
-                <div className="flex items-center">
-                  <Users className="h-4 w-4 mr-2" />
-                  {!isCollapsed && "Anagrafica Clienti"}
+              <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-sidebar-accent rounded-md px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  {!isCollapsed && <span>Clienti</span>}
                 </div>
                 {!isCollapsed && (
-                  <ChevronDown className={`h-4 w-4 transition-transform ${clientsOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${clientsOpen ? "rotate-180" : ""}`} />
                 )}
               </SidebarGroupLabel>
             </CollapsibleTrigger>
@@ -123,10 +124,10 @@ export function CRMSidebar() {
                 <SidebarMenu>
                   {clientItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild tooltip={item.title}>
                         <NavLink to={item.url} className={getNavCls} onClick={handleNavClick}>
-                          <item.icon className={`h-4 w-4 text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground ${isCollapsed ? "mx-auto" : "mr-3"}`} />
-                          {!isCollapsed && <span className="text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground">{item.title}</span>}
+                          <item.icon className="h-4 w-4 shrink-0" />
+                          {!isCollapsed && <span className="ml-3">{item.title}</span>}
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -138,15 +139,17 @@ export function CRMSidebar() {
         </Collapsible>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Gestione</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-3 py-2">
+            Gestione
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainSections.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                  <NavLink to={item.url} className={getNavCls} onClick={handleNavClick}>
-                    <item.icon className={`h-5 w-5 text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground ${isCollapsed ? "mx-auto" : "mr-3"}`} />
-                    {!isCollapsed && <span className="text-sidebar-foreground group-hover/menu-item:text-sidebar-accent-foreground">{item.title}</span>}
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <NavLink to={item.url} className={getNavCls} onClick={handleNavClick}>
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {!isCollapsed && <span className="ml-3">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
