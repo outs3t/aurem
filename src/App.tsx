@@ -75,18 +75,18 @@ const App = () => (
             <Route path="/guida" element={<GuidePage />} />
             <Route path="/supporto" element={<PublicTicket />} />
             <Route element={<ProtectedLayout />}>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="clienti" element={<Customers />} />
-            <Route path="clienti/persone-fisiche" element={<Customers />} />
-            <Route path="clienti/aziende" element={<Customers />} />
-            <Route path="task" element={<Tasks />} />
-            <Route path="magazzino" element={<Warehouse />} />
-            <Route path="chat" element={<Chat />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="preventivi" element={<Quotes />} />
-            <Route path="contratti" element={<Contracts />} />
-            <Route path="ticket" element={<Tickets />} />
-            <Route path="impostazioni" element={<Settings />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/clienti" element={<Customers />} />
+              <Route path="/clienti/persone-fisiche" element={<Customers />} />
+              <Route path="/clienti/aziende" element={<Customers />} />
+              <Route path="/task" element={<Tasks />} />
+              <Route path="/magazzino" element={<Warehouse />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/preventivi" element={<Quotes />} />
+              <Route path="/contratti" element={<Contracts />} />
+              <Route path="/ticket" element={<Tickets />} />
+              <Route path="/impostazioni" element={<Settings />} />
             </Route>
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
