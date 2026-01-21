@@ -2,3 +2,6 @@ project_id = "kiauvyulzwhfhfsfzuug"
 
 [functions.send-ticket-email]
 verify_jwt = false
+
+[functions.reset-demo-data]
+verify_jwt = false
