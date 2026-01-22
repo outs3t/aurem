@@ -40,6 +40,27 @@ export function useCustomers() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  const getDeleteDependencies = async (customerId: string) => {
+    const [quotesRes, contractsRes] = await Promise.all([
+      supabase
+        .from('quotes')
+        .select('id', { count: 'exact', head: true })
+        .eq('customer_id', customerId),
+      supabase
+        .from('contracts')
+        .select('id', { count: 'exact', head: true })
+        .eq('customer_id', customerId),
+    ]);
+
+    if (quotesRes.error) throw quotesRes.error;
+    if (contractsRes.error) throw contractsRes.error;
+
+    return {
+      quotes: quotesRes.count ?? 0,
+      contracts: contractsRes.count ?? 0,
+    };
+  };
+
   useEffect(() => {
     fetchCustomers();
   }, []);
@@ -136,20 +157,43 @@ export function useCustomers() {
 
   const deleteCustomer = async (id: string) => {
     try {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const user = authData?.user;
+      if (authError) throw authError;
+      if (!user) {
+        toast({
+          title: 'Accesso richiesto',
+          description: 'Devi essere autenticato per eliminare un cliente.',
+          variant: 'destructive',
+        });
+        throw new Error('Not authenticated');
+      }
+
+      const deps = await getDeleteDependencies(id);
+      if (deps.quotes > 0 || deps.contracts > 0) {
+        const parts: string[] = [];
+        if (deps.quotes > 0) parts.push(`${deps.quotes} preventivi`);
+        if (deps.contracts > 0) parts.push(`${deps.contracts} contratti`);
+
+        toast({
+          title: 'Impossibile eliminare il cliente',
+          description: `Questo cliente è collegato a: ${parts.join(', ')}. Elimina prima i record in “Preventivi” e/o “Contratti”.`,
+          variant: 'destructive',
+        });
+        return;
+      }
+
       console.log('Attempting to delete customer with id:', id);
-      
-      const { error, count } = await supabase
+      const { error } = await supabase
         .from('customers')
         .delete()
-        .eq('id', id)
-        .select();
+        .eq('id', id);
 
       if (error) {
         console.error('Supabase delete error:', error);
         throw error;
       }
-      
-      console.log('Delete successful, updating local state');
+
       setCustomers(prev => prev.filter(customer => customer.id !== id));
       toast({
         title: 'Successo',
@@ -157,9 +201,16 @@ export function useCustomers() {
       });
     } catch (error: any) {
       console.error('Error deleting customer:', error);
+
+      // FK / vincoli: 23503 = foreign_key_violation
+      const maybeCode = error?.code as string | undefined;
+      const fallbackMsg = maybeCode === '23503'
+        ? 'Impossibile eliminare: il cliente è collegato ad altri record (es. preventivi/contratti).'
+        : (error?.message || 'Impossibile eliminare il cliente');
+
       toast({
         title: 'Errore',
-        description: error?.message || 'Impossibile eliminare il cliente',
+        description: fallbackMsg,
         variant: 'destructive',
       });
     }
