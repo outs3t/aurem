@@ -37,6 +37,10 @@ export default function Auth() {
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(true);
+  const [submittingLogin, setSubmittingLogin] = useState(false);
+  const [submittingSignup, setSubmittingSignup] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [signupError, setSignupError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailUp, setEmailUp] = useState("");
@@ -57,6 +61,7 @@ export default function Auth() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError(null);
     
     // Security: Validate input before sending to Supabase
     const validation = loginSchema.safeParse({ email, password });
@@ -65,22 +70,37 @@ export default function Auth() {
       toast({ title: "Errore di validazione", description: errors, variant: "destructive" });
       return;
     }
-    
-    const { error } = await supabase.auth.signInWithPassword({ 
-      email: validation.data.email, 
-      password: validation.data.password 
-    });
-    
-    if (error) {
-      toast({ title: "Accesso fallito", description: error.message, variant: "destructive" });
-    } else {
+
+    try {
+      setSubmittingLogin(true);
+      const { error } = await supabase.auth.signInWithPassword({
+        email: validation.data.email,
+        password: validation.data.password,
+      });
+
+      if (error) {
+        const msg = /invalid login credentials/i.test(error.message)
+          ? "Credenziali non valide oppure utente inesistente."
+          : error.message;
+        setLoginError(msg);
+        toast({ title: "Accesso fallito", description: msg, variant: "destructive" });
+        return;
+      }
+
       toast({ title: "Benvenuto", description: "Login effettuato con successo" });
       navigate("/dashboard", { replace: true });
+    } catch (err: any) {
+      const msg = err?.message || "Errore imprevisto durante l'accesso";
+      setLoginError(msg);
+      toast({ title: "Accesso fallito", description: msg, variant: "destructive" });
+    } finally {
+      setSubmittingLogin(false);
     }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSignupError(null);
     
     // Security: Validate input before sending to Supabase
     const validation = signupSchema.safeParse({ email: emailUp, password: passwordUp });
@@ -89,18 +109,28 @@ export default function Auth() {
       toast({ title: "Errore di validazione", description: errors, variant: "destructive" });
       return;
     }
-    
-    const redirectUrl = `${window.location.origin}/dashboard`;
-    const { error } = await supabase.auth.signUp({
-      email: validation.data.email,
-      password: validation.data.password,
-      options: { emailRedirectTo: redirectUrl },
-    });
-    
-    if (error) {
-      toast({ title: "Registrazione fallita", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Controlla la tua email", description: "Conferma l'indirizzo per completare l'accesso" });
+
+    try {
+      setSubmittingSignup(true);
+      const redirectUrl = `${window.location.origin}/dashboard`;
+      const { error } = await supabase.auth.signUp({
+        email: validation.data.email,
+        password: validation.data.password,
+        options: { emailRedirectTo: redirectUrl },
+      });
+
+      if (error) {
+        setSignupError(error.message);
+        toast({ title: "Registrazione fallita", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Controlla la tua email", description: "Conferma l'indirizzo per completare l'accesso" });
+      }
+    } catch (err: any) {
+      const msg = err?.message || "Errore imprevisto durante la registrazione";
+      setSignupError(msg);
+      toast({ title: "Registrazione fallita", description: msg, variant: "destructive" });
+    } finally {
+      setSubmittingSignup(false);
     }
   };
 
@@ -135,7 +165,14 @@ export default function Auth() {
                   <Label htmlFor="password">Password</Label>
                   <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
-                <Button type="submit" className="w-full">Entra</Button>
+                <Button type="submit" className="w-full" disabled={submittingLogin} aria-busy={submittingLogin}>
+                  {submittingLogin ? "Accesso in corso…" : "Entra"}
+                </Button>
+                {loginError && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {loginError}
+                  </p>
+                )}
               </form>
             </TabsContent>
             <TabsContent value="signup">
@@ -148,7 +185,14 @@ export default function Auth() {
                   <Label htmlFor="passwordUp">Password</Label>
                   <Input id="passwordUp" type="password" value={passwordUp} onChange={(e) => setPasswordUp(e.target.value)} required />
                 </div>
-                <Button type="submit" className="w-full">Crea account</Button>
+                <Button type="submit" className="w-full" disabled={submittingSignup} aria-busy={submittingSignup}>
+                  {submittingSignup ? "Creazione in corso…" : "Crea account"}
+                </Button>
+                {signupError && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {signupError}
+                  </p>
+                )}
               </form>
             </TabsContent>
           </Tabs>
