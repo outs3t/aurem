@@ -41,7 +41,7 @@ export function useCustomers() {
   const { toast } = useToast();
 
   const getDeleteDependencies = async (customerId: string) => {
-    const [quotesRes, contractsRes] = await Promise.all([
+    const [quotesRes, contractsRes, serialsRes] = await Promise.all([
       supabase
         .from('quotes')
         .select('id', { count: 'exact', head: true })
@@ -50,14 +50,21 @@ export function useCustomers() {
         .from('contracts')
         .select('id', { count: 'exact', head: true })
         .eq('customer_id', customerId),
+      // Seriali venduti associati al cliente (se usati)
+      supabase
+        .from('product_serials')
+        .select('id', { count: 'exact', head: true })
+        .eq('sold_to', customerId),
     ]);
 
     if (quotesRes.error) throw quotesRes.error;
     if (contractsRes.error) throw contractsRes.error;
+    if (serialsRes.error) throw serialsRes.error;
 
     return {
       quotes: quotesRes.count ?? 0,
       contracts: contractsRes.count ?? 0,
+      serials: serialsRes.count ?? 0,
     };
   };
 
@@ -170,10 +177,11 @@ export function useCustomers() {
       }
 
       const deps = await getDeleteDependencies(id);
-      if (deps.quotes > 0 || deps.contracts > 0) {
+      if (deps.quotes > 0 || deps.contracts > 0 || deps.serials > 0) {
         const parts: string[] = [];
         if (deps.quotes > 0) parts.push(`${deps.quotes} preventivi`);
         if (deps.contracts > 0) parts.push(`${deps.contracts} contratti`);
+        if (deps.serials > 0) parts.push(`${deps.serials} seriali venduti`);
 
         toast({
           title: 'Impossibile eliminare il cliente',
@@ -184,14 +192,27 @@ export function useCustomers() {
       }
 
       console.log('Attempting to delete customer with id:', id);
-      const { error } = await supabase
+      const { data: deleted, error } = await supabase
         .from('customers')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        // Se RLS blocca l'operazione, PostgREST può non dare errore ma non cancellare nulla.
+        // Chiedendo un RETURNING possiamo verificare che sia stato davvero eliminato.
+        .select('id')
+        .maybeSingle();
 
       if (error) {
         console.error('Supabase delete error:', error);
         throw error;
+      }
+
+      if (!deleted?.id) {
+        toast({
+          title: 'Impossibile eliminare',
+          description: 'Il cliente non è stato eliminato (permessi insufficienti o record non trovato).',
+          variant: 'destructive',
+        });
+        return;
       }
 
       setCustomers(prev => prev.filter(customer => customer.id !== id));
