@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { CRMSidebar } from "@/components/sidebar/CRMSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { WorkspaceProvider } from "@/components/workspace/WorkspaceProvider";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
@@ -25,6 +26,7 @@ import { ThemeProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
+
 const queryClient = new QueryClient();
 
 function ProtectedLayout() {
@@ -48,17 +50,19 @@ function ProtectedLayout() {
   if (!session) return <Navigate to="/auth" replace />;
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <CRMSidebar />
-        <div className="flex-1 flex flex-col">
-          <DashboardHeader />
-          <main className="flex-1">
-            <Outlet />
-          </main>
+    <WorkspaceProvider>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <CRMSidebar />
+          <div className="flex-1 flex flex-col">
+            <DashboardHeader />
+            <main className="flex-1">
+              <Outlet />
+            </main>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </WorkspaceProvider>
   );
 }
 

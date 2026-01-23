@@ -33,6 +33,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { WorkspaceSwitcher } from "@/components/workspace/WorkspaceSwitcher";
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
@@ -77,14 +78,16 @@ export function CRMSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarContent className="bg-sidebar">
-        {!isCollapsed && (
-          <div className="p-4 border-b border-sidebar-border">
-            <h2 className="text-lg font-bold text-sidebar-foreground">
-              CRM Gestionale
-            </h2>
-            <p className="text-xs text-muted-foreground">Sistema di gestione</p>
-          </div>
-        )}
+        {/* Workspace Switcher */}
+        <div className="p-3 border-b border-sidebar-border">
+          {!isCollapsed ? (
+            <WorkspaceSwitcher />
+          ) : (
+            <div className="flex justify-center">
+              <Building2 className="h-5 w-5 text-primary" />
+            </div>
+          )}
+        </div>
 
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground px-3 py-2">

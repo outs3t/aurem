@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useWorkspaceId } from '@/hooks/useWorkspace';
 
 export type CustomerType = 'persona_fisica' | 'azienda';
 
@@ -33,12 +34,14 @@ export interface Customer {
   active?: boolean;
   created_at?: string;
   updated_at?: string;
+  workspace_id?: string;
 }
 
 export function useCustomers() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const workspaceId = useWorkspaceId();
 
   const getDeleteDependencies = async (customerId: string) => {
     const [quotesRes, contractsRes, serialsRes] = await Promise.all([
@@ -50,7 +53,6 @@ export function useCustomers() {
         .from('contracts')
         .select('id', { count: 'exact', head: true })
         .eq('customer_id', customerId),
-      // Seriali venduti associati al cliente (se usati)
       supabase
         .from('product_serials')
         .select('id', { count: 'exact', head: true })
@@ -69,14 +71,19 @@ export function useCustomers() {
   };
 
   useEffect(() => {
-    fetchCustomers();
-  }, []);
+    if (workspaceId) {
+      fetchCustomers();
+    }
+  }, [workspaceId]);
 
   const fetchCustomers = async () => {
+    if (!workspaceId) return;
+    
     try {
       const { data, error } = await supabase
         .from('customers')
         .select('*')
+        .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -93,7 +100,16 @@ export function useCustomers() {
     }
   };
 
-  const createCustomer = async (customerData: Omit<Customer, 'id' | 'created_at' | 'updated_at'>) => {
+  const createCustomer = async (customerData: Omit<Customer, 'id' | 'created_at' | 'updated_at' | 'workspace_id'>) => {
+    if (!workspaceId) {
+      toast({
+        title: 'Errore',
+        description: 'Nessun workspace attivo',
+        variant: 'destructive',
+      });
+      throw new Error('No workspace');
+    }
+
     try {
       const { data: authData, error: authError } = await supabase.auth.getUser();
       const user = authData?.user;
@@ -109,7 +125,7 @@ export function useCustomers() {
 
       const { data, error } = await supabase
         .from('customers')
-        .insert([{ ...customerData, created_by: user.id }])
+        .insert([{ ...customerData, created_by: user.id, workspace_id: workspaceId }])
         .select()
         .maybeSingle();
 
