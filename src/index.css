@@ -142,4 +142,46 @@
   .transition-smooth {
     transition: var(--transition-smooth);
   }
+
+  /* Mobile-optimized Toast Notifications */
+  [data-sonner-toaster] {
+    --width: calc(100vw - 2rem) !important;
+    font-size: 1rem !important;
+  }
+
+  @media (max-width: 640px) {
+    [data-sonner-toaster] {
+      top: 1rem !important;
+      left: 1rem !important;
+      right: 1rem !important;
+      --width: calc(100vw - 2rem) !important;
+    }
+
+    [data-sonner-toast] {
+      padding: 1rem !important;
+      font-size: 1rem !important;
+      min-height: 70px !important;
+      border-radius: 1rem !important;
+      box-shadow: 0 10px 25px -5px hsl(0 0% 0% / 0.25) !important;
+    }
+
+    [data-sonner-toast] [data-title] {
+      font-size: 1rem !important;
+      font-weight: 600 !important;
+      line-height: 1.4 !important;
+    }
+
+    [data-sonner-toast] [data-description] {
+      font-size: 0.875rem !important;
+      line-height: 1.4 !important;
+      margin-top: 0.25rem !important;
+    }
+
+    [data-sonner-toast] [data-close-button] {
+      width: 28px !important;
+      height: 28px !important;
+      top: 0.75rem !important;
+      right: 0.75rem !important;
+    }
+  }
 }
