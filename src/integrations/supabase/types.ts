@@ -134,6 +134,7 @@ export type Database = {
           name: string
           room_type: string
           updated_at: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -145,6 +146,7 @@ export type Database = {
           name: string
           room_type?: string
           updated_at?: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -156,6 +158,7 @@ export type Database = {
           name?: string
           room_type?: string
           updated_at?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -164,6 +167,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -189,6 +199,7 @@ export type Database = {
           status: Database["public"]["Enums"]["contract_status"]
           title: string
           updated_at: string
+          workspace_id: string | null
         }
         Insert: {
           auto_renewal?: boolean | null
@@ -211,6 +222,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["contract_status"]
           title: string
           updated_at?: string
+          workspace_id?: string | null
         }
         Update: {
           auto_renewal?: boolean | null
@@ -233,6 +245,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["contract_status"]
           title?: string
           updated_at?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -255,6 +268,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "contracts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -289,6 +309,7 @@ export type Database = {
           tags: string[] | null
           updated_at: string
           website: string | null
+          workspace_id: string | null
         }
         Insert: {
           active?: boolean
@@ -320,6 +341,7 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string
           website?: string | null
+          workspace_id?: string | null
         }
         Update: {
           active?: boolean
@@ -351,6 +373,7 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string
           website?: string | null
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -359,6 +382,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "customers_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -376,6 +406,7 @@ export type Database = {
           status: Database["public"]["Enums"]["notification_status"]
           title: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -390,6 +421,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["notification_status"]
           title: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -404,6 +436,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["notification_status"]
           title?: string
           user_id?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -412,6 +445,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "notifications_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -423,6 +463,7 @@ export type Database = {
           id: string
           name: string
           parent_id: string | null
+          workspace_id: string | null
         }
         Insert: {
           active?: boolean
@@ -431,6 +472,7 @@ export type Database = {
           id?: string
           name: string
           parent_id?: string | null
+          workspace_id?: string | null
         }
         Update: {
           active?: boolean
@@ -439,6 +481,7 @@ export type Database = {
           id?: string
           name?: string
           parent_id?: string | null
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -446,6 +489,13 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_categories_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -467,6 +517,7 @@ export type Database = {
           supplier_invoice: string | null
           updated_at: string
           warranty_expires: string | null
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -484,6 +535,7 @@ export type Database = {
           supplier_invoice?: string | null
           updated_at?: string
           warranty_expires?: string | null
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -501,6 +553,7 @@ export type Database = {
           supplier_invoice?: string | null
           updated_at?: string
           warranty_expires?: string | null
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -522,6 +575,13 @@ export type Database = {
             columns: ["sold_to"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_serials_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -549,6 +609,7 @@ export type Database = {
           unit_of_measure: string | null
           updated_at: string
           weight: number | null
+          workspace_id: string | null
         }
         Insert: {
           active?: boolean
@@ -572,6 +633,7 @@ export type Database = {
           unit_of_measure?: string | null
           updated_at?: string
           weight?: number | null
+          workspace_id?: string | null
         }
         Update: {
           active?: boolean
@@ -595,6 +657,7 @@ export type Database = {
           unit_of_measure?: string | null
           updated_at?: string
           weight?: number | null
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -610,6 +673,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "products_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -664,6 +734,7 @@ export type Database = {
           quantity: number
           quote_id: string
           unit_price: number
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -676,6 +747,7 @@ export type Database = {
           quantity?: number
           quote_id: string
           unit_price: number
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -688,6 +760,7 @@ export type Database = {
           quantity?: number
           quote_id?: string
           unit_price?: number
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -702,6 +775,13 @@ export type Database = {
             columns: ["quote_id"]
             isOneToOne: false
             referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -728,6 +808,7 @@ export type Database = {
           total_amount: number
           updated_at: string
           valid_until: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -750,6 +831,7 @@ export type Database = {
           total_amount?: number
           updated_at?: string
           valid_until: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -772,6 +854,7 @@ export type Database = {
           total_amount?: number
           updated_at?: string
           valid_until?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -786,6 +869,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -803,6 +893,7 @@ export type Database = {
           reference_type: string | null
           total_value: number | null
           unit_price: number | null
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -816,6 +907,7 @@ export type Database = {
           reference_type?: string | null
           total_value?: number | null
           unit_price?: number | null
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -829,6 +921,7 @@ export type Database = {
           reference_type?: string | null
           total_value?: number | null
           unit_price?: number | null
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -843,6 +936,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -860,6 +960,7 @@ export type Database = {
           status: Database["public"]["Enums"]["task_status"]
           title: string
           updated_at: string
+          workspace_id: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -873,6 +974,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["task_status"]
           title: string
           updated_at?: string
+          workspace_id?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -886,8 +988,17 @@ export type Database = {
           status?: Database["public"]["Enums"]["task_status"]
           title?: string
           updated_at?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ticket_replies: {
         Row: {
@@ -942,6 +1053,7 @@ export type Database = {
           subject: string
           ticket_number: string
           updated_at: string | null
+          workspace_id: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -960,6 +1072,7 @@ export type Database = {
           subject: string
           ticket_number: string
           updated_at?: string | null
+          workspace_id?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -978,8 +1091,17 @@ export type Database = {
           subject?: string
           ticket_number?: string
           updated_at?: string | null
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tickets_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -1005,14 +1127,181 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_invites: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          perm_analytics: Database["public"]["Enums"]["permission_level"]
+          perm_chat: Database["public"]["Enums"]["permission_level"]
+          perm_contracts: Database["public"]["Enums"]["permission_level"]
+          perm_customers: Database["public"]["Enums"]["permission_level"]
+          perm_products: Database["public"]["Enums"]["permission_level"]
+          perm_quotes: Database["public"]["Enums"]["permission_level"]
+          perm_settings: Database["public"]["Enums"]["permission_level"]
+          perm_tasks: Database["public"]["Enums"]["permission_level"]
+          perm_tickets: Database["public"]["Enums"]["permission_level"]
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          perm_analytics?: Database["public"]["Enums"]["permission_level"]
+          perm_chat?: Database["public"]["Enums"]["permission_level"]
+          perm_contracts?: Database["public"]["Enums"]["permission_level"]
+          perm_customers?: Database["public"]["Enums"]["permission_level"]
+          perm_products?: Database["public"]["Enums"]["permission_level"]
+          perm_quotes?: Database["public"]["Enums"]["permission_level"]
+          perm_settings?: Database["public"]["Enums"]["permission_level"]
+          perm_tasks?: Database["public"]["Enums"]["permission_level"]
+          perm_tickets?: Database["public"]["Enums"]["permission_level"]
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          perm_analytics?: Database["public"]["Enums"]["permission_level"]
+          perm_chat?: Database["public"]["Enums"]["permission_level"]
+          perm_contracts?: Database["public"]["Enums"]["permission_level"]
+          perm_customers?: Database["public"]["Enums"]["permission_level"]
+          perm_products?: Database["public"]["Enums"]["permission_level"]
+          perm_quotes?: Database["public"]["Enums"]["permission_level"]
+          perm_settings?: Database["public"]["Enums"]["permission_level"]
+          perm_tasks?: Database["public"]["Enums"]["permission_level"]
+          perm_tickets?: Database["public"]["Enums"]["permission_level"]
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_invites_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_members: {
+        Row: {
+          id: string
+          is_owner: boolean
+          joined_at: string
+          perm_analytics: Database["public"]["Enums"]["permission_level"]
+          perm_chat: Database["public"]["Enums"]["permission_level"]
+          perm_contracts: Database["public"]["Enums"]["permission_level"]
+          perm_customers: Database["public"]["Enums"]["permission_level"]
+          perm_products: Database["public"]["Enums"]["permission_level"]
+          perm_quotes: Database["public"]["Enums"]["permission_level"]
+          perm_settings: Database["public"]["Enums"]["permission_level"]
+          perm_tasks: Database["public"]["Enums"]["permission_level"]
+          perm_tickets: Database["public"]["Enums"]["permission_level"]
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          id?: string
+          is_owner?: boolean
+          joined_at?: string
+          perm_analytics?: Database["public"]["Enums"]["permission_level"]
+          perm_chat?: Database["public"]["Enums"]["permission_level"]
+          perm_contracts?: Database["public"]["Enums"]["permission_level"]
+          perm_customers?: Database["public"]["Enums"]["permission_level"]
+          perm_products?: Database["public"]["Enums"]["permission_level"]
+          perm_quotes?: Database["public"]["Enums"]["permission_level"]
+          perm_settings?: Database["public"]["Enums"]["permission_level"]
+          perm_tasks?: Database["public"]["Enums"]["permission_level"]
+          perm_tickets?: Database["public"]["Enums"]["permission_level"]
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          id?: string
+          is_owner?: boolean
+          joined_at?: string
+          perm_analytics?: Database["public"]["Enums"]["permission_level"]
+          perm_chat?: Database["public"]["Enums"]["permission_level"]
+          perm_contracts?: Database["public"]["Enums"]["permission_level"]
+          perm_customers?: Database["public"]["Enums"]["permission_level"]
+          perm_products?: Database["public"]["Enums"]["permission_level"]
+          perm_quotes?: Database["public"]["Enums"]["permission_level"]
+          perm_settings?: Database["public"]["Enums"]["permission_level"]
+          perm_tasks?: Database["public"]["Enums"]["permission_level"]
+          perm_tickets?: Database["public"]["Enums"]["permission_level"]
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          owner_id: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      can_access_section: {
+        Args: {
+          _min_level?: Database["public"]["Enums"]["permission_level"]
+          _section: string
+          _user_id: string
+          _workspace_id: string
+        }
+        Returns: boolean
+      }
       check_contract_expiries: { Args: never; Returns: undefined }
       check_low_stock: { Args: never; Returns: undefined }
       generate_ticket_number: { Args: never; Returns: string }
+      get_user_workspace_permission: {
+        Args: { _section: string; _user_id: string; _workspace_id: string }
+        Returns: Database["public"]["Enums"]["permission_level"]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1022,6 +1311,14 @@ export type Database = {
       }
       is_member: {
         Args: { _room_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_workspace_member: {
+        Args: { _user_id: string; _workspace_id: string }
+        Returns: boolean
+      }
+      is_workspace_owner: {
+        Args: { _user_id: string; _workspace_id: string }
         Returns: boolean
       }
       room_is_accessible: {
@@ -1041,6 +1338,7 @@ export type Database = {
       contract_type: "esterno" | "interno"
       customer_type: "persona_fisica" | "azienda"
       notification_status: "non_letta" | "letta" | "archiviata"
+      permission_level: "none" | "view" | "edit" | "admin"
       task_priority: "bassa" | "media" | "alta" | "urgente"
       task_status: "da_fare" | "in_corso" | "completata" | "annullata"
     }
@@ -1175,6 +1473,7 @@ export const Constants = {
       contract_type: ["esterno", "interno"],
       customer_type: ["persona_fisica", "azienda"],
       notification_status: ["non_letta", "letta", "archiviata"],
+      permission_level: ["none", "view", "edit", "admin"],
       task_priority: ["bassa", "media", "alta", "urgente"],
       task_status: ["da_fare", "in_corso", "completata", "annullata"],
     },
