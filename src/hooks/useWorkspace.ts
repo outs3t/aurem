@@ -148,21 +148,56 @@ export function useCanAccess(section: string, minLevel: PermissionLevel = 'view'
   return { canAccess, isLoading: false, permission: userLevel };
 }
 
+// Helper per generare slug univoco
+async function generateUniqueSlug(baseName: string): Promise<string> {
+  const baseSlug = baseName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  
+  // Verifica se lo slug esiste già
+  const { data: existing } = await supabase
+    .from('workspaces')
+    .select('slug')
+    .like('slug', `${baseSlug}%`);
+  
+  if (!existing || existing.length === 0) {
+    return baseSlug;
+  }
+  
+  // Trova il prossimo numero disponibile
+  const existingSlugs = new Set(existing.map(w => w.slug));
+  
+  if (!existingSlugs.has(baseSlug)) {
+    return baseSlug;
+  }
+  
+  let counter = 2;
+  while (existingSlugs.has(`${baseSlug}-${counter}`)) {
+    counter++;
+  }
+  
+  return `${baseSlug}-${counter}`;
+}
+
 // Hook per creare un nuovo workspace
 export function useCreateWorkspace() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ name, slug }: { name: string; slug: string }) => {
+    mutationFn: async ({ name }: { name: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Non autenticato');
+
+      // Genera slug univoco
+      const uniqueSlug = await generateUniqueSlug(name);
 
       // Crea workspace
       const { data: workspace, error: wsError } = await supabase
         .from('workspaces')
         .insert({
           name,
-          slug: slug.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+          slug: uniqueSlug,
           owner_id: user.id,
         })
         .select()
