@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ContractDetailsDialog } from '@/components/contracts/ContractDetailsDialog';
-
+import { useWorkspaceId } from "@/hooks/useWorkspace";
 interface Contract {
   id: string;
   contract_number: string;
@@ -60,6 +60,7 @@ const Contracts = () => {
   const [viewingContract, setViewingContract] = useState<Contract | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const { toast } = useToast();
+  const workspaceId = useWorkspaceId();
 
   const [newContract, setNewContract] = useState({
     contract_number: '',
@@ -76,12 +77,9 @@ const Contracts = () => {
     notes: ''
   });
 
-  useEffect(() => {
-    fetchContracts();
-    fetchCustomers();
-  }, []);
-
-  const fetchContracts = async () => {
+  const fetchContracts = useCallback(async () => {
+    if (!workspaceId) return;
+    
     try {
       const { data, error } = await supabase
         .from('contracts')
@@ -93,6 +91,7 @@ const Contracts = () => {
             company_name
           )
         `)
+        .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -107,13 +106,16 @@ const Contracts = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [workspaceId, toast]);
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
+    if (!workspaceId) return;
+    
     try {
       const { data, error } = await supabase
         .from('customers')
         .select('id, first_name, last_name, company_name, customer_type')
+        .eq('workspace_id', workspaceId)
         .eq('active', true)
         .order('created_at', { ascending: false });
 
@@ -122,7 +124,14 @@ const Contracts = () => {
     } catch (error) {
       console.error('Error fetching customers:', error);
     }
-  };
+  }, [workspaceId]);
+
+  useEffect(() => {
+    if (workspaceId) {
+      fetchContracts();
+      fetchCustomers();
+    }
+  }, [workspaceId, fetchContracts, fetchCustomers]);
 
   const generateContractNumber = () => {
     const year = new Date().getFullYear();
@@ -132,19 +141,41 @@ const Contracts = () => {
   };
 
   const handleCreateContract = async () => {
+    if (!workspaceId) {
+      toast({
+        title: "Errore",
+        description: "Nessun workspace attivo",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const contractData = {
         ...newContract,
         contract_number: newContract.contract_number || generateContractNumber(),
         status: 'bozza',
-        customer_id: newContract.customer_id || null // Fix: Convert empty string to null
+        customer_id: newContract.customer_id || null,
+        workspace_id: workspaceId,
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('contracts')
-        .insert([contractData] as any);
+        .insert([contractData] as any)
+        .select(`
+          *,
+          customers (
+            first_name,
+            last_name,
+            company_name
+          )
+        `)
+        .single();
 
       if (error) throw error;
+
+      // Update UI immediately
+      setContracts(prev => [data, ...prev]);
 
       toast({
         title: "Successo",
@@ -153,7 +184,6 @@ const Contracts = () => {
 
       setIsDialogOpen(false);
       resetForm();
-      fetchContracts();
     } catch (error) {
       console.error('Error creating contract:', error);
       toast({
@@ -168,12 +198,26 @@ const Contracts = () => {
     if (!editingContract) return;
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('contracts')
         .update(newContract)
-        .eq('id', editingContract.id);
+        .eq('id', editingContract.id)
+        .select(`
+          *,
+          customers (
+            first_name,
+            last_name,
+            company_name
+          )
+        `)
+        .single();
 
       if (error) throw error;
+
+      // Update UI immediately
+      setContracts(prev => 
+        prev.map(c => c.id === editingContract.id ? data : c)
+      );
 
       toast({
         title: "Successo",
@@ -183,7 +227,6 @@ const Contracts = () => {
       setIsDialogOpen(false);
       setEditingContract(null);
       resetForm();
-      fetchContracts();
     } catch (error) {
       console.error('Error updating contract:', error);
       toast({
@@ -205,12 +248,13 @@ const Contracts = () => {
 
       if (error) throw error;
 
+      // Update UI immediately
+      setContracts(prev => prev.filter(c => c.id !== contractId));
+
       toast({
         title: "Successo",
         description: "Contratto eliminato con successo",
       });
-
-      fetchContracts();
     } catch (error) {
       console.error('Error deleting contract:', error);
       toast({
@@ -230,12 +274,15 @@ const Contracts = () => {
 
       if (error) throw error;
 
+      // Update UI immediately
+      setContracts(prev => 
+        prev.map(c => c.id === contractId ? { ...c, status: newStatus } : c)
+      );
+
       toast({
         title: "Successo",
         description: `Stato aggiornato a: ${newStatus}`,
       });
-
-      fetchContracts();
     } catch (error) {
       console.error('Error updating status:', error);
       toast({
