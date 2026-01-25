@@ -41,12 +41,7 @@ export function WorkspaceOnboarding({ onComplete }: WorkspaceOnboardingProps) {
 
     setIsCreating(true);
     try {
-      const slug = companyName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-      
-      await createWorkspace.mutateAsync({ name: companyName, slug });
+      await createWorkspace.mutateAsync({ name: companyName });
       onComplete();
     } finally {
       setIsCreating(false);
